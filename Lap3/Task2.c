@@ -1,6 +1,7 @@
 
 #include <stdio.h>
 #include "conio.h"
+#define SIZE 3
 
 void blue()
 {
@@ -10,6 +11,11 @@ void blue()
 void white()
 {
   printf("\033[0;37m");
+};
+
+void resetColor()
+{
+  printf("\x1B[0m");
 };
 
 void resetCursor()
@@ -34,6 +40,7 @@ void displayMenuOPtions(char *option, int isSelected)
     white();
   }
   printf("%s\n\n\n", option);
+  resetColor();
 };
 
 int main()
@@ -46,10 +53,9 @@ int main()
    input = getch();
    printf("%d", input);*/
   const char *menuOptions[] = {"New", "Display", "Exit"};
-  int size = 3;
   int selectedOption = 0;
   printf("Please choose a option \n\n\n");
-  for (int i = 0; i < size; i++)
+  for (int i = 0; i < SIZE; i++)
   {
     displayMenuOPtions(menuOptions[i], i == selectedOption);
   }
@@ -66,13 +72,17 @@ int main()
     // we user press arrow up
     if (input == 65)
     {
+      if (selectedOption == 0)
+      {
+        selectedOption = 3;
+      }
       if (selectedOption > 0)
       {
         resetCursor();
         // decrease the cursor
         selectedOption--;
         // show the menu
-        for (int i = 0; i < size; i++)
+        for (int i = 0; i < SIZE; i++)
         {
           displayMenuOPtions(menuOptions[i], i == selectedOption);
         }
@@ -81,16 +91,20 @@ int main()
     // Arrow will go down
     if (input == 66)
     {
-      if (selectedOption < size - 1)
+      if (selectedOption == SIZE - 1)
+      {
+        selectedOption = -1;
+      }
+      if (selectedOption < SIZE - 1)
       {
         resetCursor();
         selectedOption++;
-        for (int i = 0; i < size; i++)
+        for (int i = 0; i < SIZE; i++)
         {
           displayMenuOPtions(menuOptions[i], i == selectedOption);
         }
       }
-        }
+    }
 
     // Incase user select one from the options and press enter
 
@@ -111,7 +125,7 @@ int main()
       if (input == 127)
       {
         clearScreen();
-        for (int i = 0; i < size; i++)
+        for (int i = 0; i < SIZE; i++)
         {
           displayMenuOPtions(menuOptions[i], i == selectedOption);
         }
@@ -119,7 +133,7 @@ int main()
       if (selectedOption == 2 && input == 127)
       {
         clearScreen();
-        for (int i = 0; i < size; i++)
+        for (int i = 0; i < SIZE; i++)
         {
           displayMenuOPtions(menuOptions[i], i == selectedOption);
         }
