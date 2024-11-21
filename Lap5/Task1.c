@@ -14,6 +14,7 @@
 #define OPTIONTWO 1
 #define OPTIONTHREE 2
 #define OPTIONFOUR 3
+// #define OPTIONFIVE 4
 #define SIZE 4
 #define EMPLOYEESIZE 100
 #define NAMESIZE 50
@@ -68,13 +69,13 @@ typedef struct Employee
 
 void ColorMenu(char *menuOptions[], int select);
 void inputEmployee(Employee employee[], int size);
-void showEmployee(Employee employee[], int size);
-void modifyEmployeeByIds(Employee employee[], int size);
+void showEmployee(Employee employee[]);
+void modifyEmployeeByIds(Employee employee[]);
 
 main()
 {
   char input;
-  Employee employeeArray[EMPLOYEESIZE];
+  Employee employeeArray[EMPLOYEESIZE] = {0};
   const char *menuOptions[] = {"New", "Display", "Modify", "Exit"};
   int selectedOption = 0;
   printf("Please choose a option \n\n\n");
@@ -155,21 +156,31 @@ main()
             printf("Invalid size please try again\n");
             flag1 = 1;
           }
-          inputEmployee(employeeArray, size);
         };
+        inputEmployee(employeeArray, size);
       }
 
-      // Incase user choose display option
+      // Incase user choose display option]
       if (selectedOption == OPTIONTWO)
       {
-        showEmployee(employeeArray, size);
+        showEmployee(employeeArray);
       }
 
       // Incase user choose modify option
       if (selectedOption == OPTIONTHREE)
       {
-        modifyEmployeeByIds(employeeArray, size);
+        modifyEmployeeByIds(employeeArray);
       }
+
+      // for delete function option
+      /* if (selectedOption == OPTIONFIVE)
+       {
+         clearScreen();
+         int id = 0;
+         printf("What's employee id you want to delete? ");
+         scanf("%d", id);
+         deleteEmployee(employeeArray, id);
+       }*/
 
       if (selectedOption == OPTIONFOUR)
       {
@@ -227,6 +238,20 @@ void ColorMenu(char *menuOptions[], int select)
 // Function to take the inputs of employee from the user
 void inputEmployee(Employee employee[], int size)
 {
+  int employeesSize = 0;
+  // check array is empty or not and back the start index
+  for (int index = 0; index < EMPLOYEESIZE; index++)
+  {
+    if (employee[index].id != 0)
+    {
+      employeesSize++;
+    }
+    else
+    {
+      index = EMPLOYEESIZE;
+    }
+  }
+
   for (int i = 0; i < size; i++)
   {
     int dontstop = 1;
@@ -247,19 +272,18 @@ void inputEmployee(Employee employee[], int size)
         while (getchar() != '\n')
           ;
       }
-      else if (validId)
+      else
       {
-        for (int i = 0; i < size; i++)
+        for (int j = 0; j < EMPLOYEESIZE; j++)
         {
-          if (tempId == employee[i].id)
+          if (tempId == employee[j].id)
           {
             unique = 0;
             while (getchar() != '\n')
               ;
-            i = size;
+            j = EMPLOYEESIZE;
           }
         }
-        employee[i].id = tempId;
       }
 
       if (!unique || !validId)
@@ -279,9 +303,9 @@ void inputEmployee(Employee employee[], int size)
       else
       {
         printf("Please enter employee number %d name: ", (i + 1));
-        scanf(" %[^\n]*", employee[i].name);
+        scanf(" %[^\n]*", employee[employeesSize + i].name);
         printf("Please enter employee number %d net salary: ", (i + 1));
-        if (scanf("%d", &employee[i].netSalary) == 0 || employee[i].netSalary <= 0)
+        if (scanf("%d", &employee[employeesSize + i].netSalary) == 0 || employee[i + employeesSize].netSalary <= 0)
         {
           printf("Invalid salary input please try again: \n");
           dontstop = 1;
@@ -290,6 +314,7 @@ void inputEmployee(Employee employee[], int size)
           while (getchar() != '\n')
             ;
         }
+        employee[employeesSize + i].id = tempId;
       }
     }
     if (i < size - 1)
@@ -309,45 +334,69 @@ void inputEmployee(Employee employee[], int size)
 }
 
 // Function to show the employees data to the user
-void showEmployee(Employee employee[], int size)
+void showEmployee(Employee employee[])
 {
-  for (int i = 0; i < size; i++)
+  for (int i = 0; i < EMPLOYEESIZE; i++)
+
   {
-    printf("Employee number %d id: %d\n", (i + 1), employee[i].id);
-    printf("Employee number %d name is: %s\n", (i + 1), employee[i].name);
-    printf("Employee number %d net salary: %d\n", (i + 1), employee[i].netSalary);
+    if (employee[i].id != 0)
+    {
+      printf("Employee number %d id: %d\n", (i + 1), employee[i].id);
+      printf("Employee number %d name is: %s\n", (i + 1), employee[i].name);
+      printf("Employee number %d net salary: %d\n", (i + 1), employee[i].netSalary);
+    }
+    else
+    {
+      i = EMPLOYEESIZE;
+    }
   }
 }
 
 // Function to modify the employees
-void modifyEmployeeByIds(Employee employee[], int size)
+void modifyEmployeeByIds(Employee employee[])
 {
-  int id;
+  int modifyId = 0;
   int dontstop = 1;
   char input;
-  char newName[NAMESIZE];
+  char newName[NAMESIZE] = "";
   int salary;
+  int validID = 1;
+  int foundIt = 0;
+  // Show the list of employees to the user
   printf("Please choose one from the following employees ids: \n");
-  for (int i = 0; i < size; i++)
+  for (int i = 0; i < EMPLOYEESIZE; i++)
   {
-    printf("Employee number %d id: %d\n", (i + 1), employee[i].id);
-  }
-  while (dontstop)
-  {
-    dontstop = 0;
-    if (scanf("%d", &id) == 0 || id <= 0)
+    if (employee[i].id != 0)
     {
-      printf("Invalid input please try again");
-      dontstop = 1;
-      while (getchar() != '\n')
-        ;
+      printf("Employee number %d id: %d\n", (i + 1), employee[i].id);
     }
     else
     {
-      for (int i = 0; i < size; i++)
+      i = EMPLOYEESIZE;
+    }
+  }
+  while (dontstop)
+  {
+    // Check for id formats
+    dontstop = 0;
+    validID = 1;
+    if (scanf("%d", &modifyId) == 0 || modifyId <= 0)
+    {
+      printf("Invalid input please try again: ");
+      dontstop = 1;
+      while (getchar() != '\n')
+        ;
+      validID = 0;
+      foundIt = 1;
+    }
+    else if (validID)
+    {
+      // Check if user input the id from the shown ids
+      for (int i = 0; i < EMPLOYEESIZE; i++)
       {
-        if (id == employee[i].id)
+        if (modifyId == employee[i].id)
         {
+          foundIt = 1;
           printf("Press (n) to modify name and (s) to modify salary: ");
           scanf(" %c", &input);
           if (input == 'n' || input == 'N')
@@ -366,14 +415,32 @@ void modifyEmployeeByIds(Employee employee[], int size)
             employee[i].netSalary = salary;
           }
         }
-        else
-        {
-          printf("Id not found please choose one from the pervious ids");
-          dontstop = 1;
-          while (getch() != '\n')
-            ;
-        }
       }
+    }
+    if (!foundIt)
+    {
+      printf("Id not found please choose one from the pervious ids");
+      dontstop = 1;
+      while (getch() != '\n')
+        ;
     }
   }
 }
+
+// Make Function to make delete operation
+/*void deleteEmployee(Employee employee[], int id)
+{
+  for (int i = 0; i < EMPLOYEESIZE; i++)
+  {
+    if (employee[i].id == id)
+    {
+      employee[i].id = 0;
+      for (int j = 0; j < NAMESIZE; j++)
+      {
+        employee[i].name[j] = '\0';
+      }
+      employee[i].netSalary = 0;
+    }
+    i = EMPLOYEESIZE;
+  }
+}*/
