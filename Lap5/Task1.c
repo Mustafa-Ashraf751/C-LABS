@@ -149,16 +149,21 @@ main()
         char flag1 = 1;
         while (flag1)
         {
+          char term;
           flag1 = 0;
           printf("How many employees you want to enter ?\n");
-          scanf("%d", &size);
-          if (size <= 0)
+          if (scanf("%d", &size) != 1 || size <= 0)
           {
-            printf("Invalid size please try again\n");
+            printf("Invalid size, please try again.\n");
+            while (getchar() != '\n')
+              ;
             flag1 = 1;
           }
+          else
+          {
+            inputEmployee(employeeArray, size);
+          }
         };
-        inputEmployee(employeeArray, size);
       }
 
       // Incase user choose display option]
@@ -190,8 +195,15 @@ main()
       // for delete function option
       if (selectedOption == OPTIONFOUR)
       {
-        clearScreen();
-        deleteEmployee(employeeArray);
+        if (employeeArray[0].id == 0)
+        {
+          printf("No employees to delete\n");
+        }
+        else
+        {
+          clearScreen();
+          deleteEmployee(employeeArray);
+        }
       }
 
       if (selectedOption == OPTIONFIVE)
@@ -215,11 +227,13 @@ main()
       if (input == BACKSPACE)
       {
         clearScreen();
+        printf("Please choose a option \n\n\n");
         ColorMenu(menuOptions, selectedOption);
       }
       if (selectedOption == OPTIONFIVE && input == BACKSPACE)
       {
         clearScreen();
+        printf("Please choose a option \n\n\n");
         ColorMenu(menuOptions, selectedOption);
       }
       else if (selectedOption == OPTIONFIVE && input == SPACE)
@@ -277,10 +291,9 @@ void inputEmployee(Employee employee[], int size)
       validId = 1;
       unique = 1;
       printf("Please enter employee number %d id: ", (i + 1));
-      if (scanf("%d", &tempId) == 0 || tempId <= 0)
+      if (scanf("%d", &tempId) != 1 || tempId <= 0)
       {
         validId = 0;
-        // Clear the input buffer to prevent program to enter infinite loop
         while (getchar() != '\n')
           ;
       }
@@ -479,10 +492,10 @@ void deleteEmployee(Employee employee[])
           employee[i].name[j] = '\0';
         }
         employee[i].netSalary = 0;
-        printf("The Employee deleted successfully");
+        printf("The Employee deleted successfully\n");
+        i = EMPLOYEESIZE;
       }
-      i = EMPLOYEESIZE;
-    }
+        }
     if (!findIt)
     {
       dontStop = 1;
